@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-- [:soon:] A function to simplify user input for single point methods.
+- :soon: A function to simplify user input for single point methods.
 
 ## [0.0.1] (2019/09/06)
 ### Added
