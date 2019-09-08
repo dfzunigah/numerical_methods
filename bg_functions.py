@@ -59,7 +59,7 @@ def _lazywhere(cond, arrays, f, fillvalue=None, f2=None):
     return out
 
 # Own methods
-def singlepoint_table(func, Xi, x0):
+def singlepoint_table(func, Xi, x0, method):
     '''
     Creates a table showing steps for the single-point rooting methods (fixed_point, newton_raphson).
 
@@ -71,6 +71,8 @@ def singlepoint_table(func, Xi, x0):
         List of solutions.
     x0 : float
         Initial value. It's only required in case only one iteration would be made.
+    method : string
+        Table processing will change depending on the method, so it's necessary to identify it.
     
     Dependencies
     ------------
@@ -87,28 +89,96 @@ def singlepoint_table(func, Xi, x0):
     -----------
     In case there's a unique iteration (meaning 'Xi' would be empty), the a single
     row dataframe will be created.
-    Otherwise, it'll first cast values in 'Xi' to float type, then it'll save in
+    Otherwise, depending on the method:
+        fixed_point: it'll first cast values in 'Xi' to float type, then it'll save in
     another list the values resulted from applying the function 'func' to all the
     'Xi' values. It will then compute the absolute error as |Xi+1 - Xi| in another
     list. Finally the three (3) lists will be zipped into a pandas.DataFrame.
-    
-    
+        newton_rapshon: For this method the parameter 'Xi' is actually F(Xi)
+    so 'Fxi' column will be simply 'Xi' casted into float. The error is the original
+    function applied to the 'Fxi' column and the 'Xi' column is the absolute value
+    between the 'error' and 'Fxi' columns.
+      
     Examples
     --------
     >>> func = lambda x: x**2-3*x+2
     >>> solution, Xi = fixed_point(func, 0, 50)
-    >>> tabs = singlepoint_table(func, Xi, x0)
+    >>> tabs = singlepoint_table(func, Xi, x0, "fixed_point")
     >>> tabs
     **Renders a 3-column table** 
     
     '''
     if len(Xi) == 0:
-        table = pd.DataFrame(columns=['Xi','Fxi', 'Error'])
+        table = pd.DataFrame(columns=['Xi','F(xi)', 'Error'])
         table.loc[0] = [x0, func(x0), abs(func(x0) - x0)]
         return table
     else:
-        Xi = [float(x) for x in Xi];
-        Fxi = list(map(func, Xi));
-        error = [abs(j-i) for j,i in zip(Fxi,Xi)]
-        table = pd.DataFrame(list(zip(Xi, Fxi, error)), columns=['Xi','Fxi', 'Error'])
+        if (method == "fixed_point"):
+            Xi = [float(x) for x in Xi];
+            Fxi = list(map(func, Xi));
+            error = [abs(j-i) for j,i in zip(Fxi, Xi)]
+            table = pd.DataFrame(Xi, columns=['Xi'])
+            table['F(xi)'] = Fxi
+            table['Error'] = error
+            return table
+        elif (method == "newton_raphson"):
+            Fxi = [float(x) for x in Xi];
+            error = list(map(func, Fxi));
+            Xi = [abs(j-i) for j,i in zip(error, Fxi)]
+            table = pd.DataFrame(Xi, columns=['Xi'])
+            table['F(xi)'] = Fxi
+            table['Error'] = error
+            return table
+        else:
+            print("Nombre de método no válido, por favor revise los nombres de los métodos")
+            
+def doublepoint_table(func, Xi, error):
+    '''
+    Creates a table showing steps for the double-point rooting methods (secant, bisection, regula_falsi).
+
+    Parameters
+    ----------
+    func : function
+        The function for which we are trying to find the fixed point.
+    Xi : list
+        List of solutions.
+    error : list
+        A list containing the absolute error of each iteration. It's literally the third column.
+    
+    Dependencies
+    ------------
+    - import pandas as pd
+    
+    Returns
+    -------
+    table : pandas.DataFrame
+        A 3-column table. 'Xi' is the solutions column, 'F(xi)' is the column
+        containing the evaluation of those solutions in the function 'func',
+        column 'Error' contains the absolute error between 'F(xi)' and 'Xi'.
+    
+    Explanation
+    -----------
+    In case there's a unique iteration (meaning 'Xi' would be empty), the a single
+    row dataframe will be created.
+    Otherwise, it'll compute F(xi) by adding the 'error' (absolute error) and the 'Xi'
+    columns. Then it'll add each column to the dataframe.
+    
+    Examples
+    --------
+    >>> func = lambda x: x**2 - x -1
+    >>> solution, Xi, error = secant(func, 1, 2, 10)
+    >>> tabs = doublepoint_table(func, Xi, error)
+    >>> tabs
+    **Renders a 3-column table** 
+    
+    '''
+    if len(Xi) == 0:
+        table = pd.DataFrame(columns=['Xi','F(xi)', 'Error'])
+        table.loc[0] = [x0, func(x0), abs(func(x0) - x0)]
+        return table
+    else:
+        Fxi = [j + abs(i) for j,i in zip(Xi, error)]
+        table = pd.DataFrame(Xi, columns=['Xi'])
+        table['F(xi)'] = Fxi
+        table['Error'] = error
         return table
