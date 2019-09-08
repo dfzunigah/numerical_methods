@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # Constants definition
 MAX_ERROR = 10e-8
@@ -182,3 +183,31 @@ def doublepoint_table(func, Xi, error):
         table['F(xi)'] = Fxi
         table['Error'] = error
         return table
+    
+def fixed_point_plot(func, dataframe, x0, aprox):
+    '''
+    
+    '''
+    xmax = dataframe['Xi'].max()
+    xpts = np.linspace(0, xmax, 500)
+    figs = dataframe.plot(kind='scatter', x='Xi', y='F(xi)', color='purple', label='Aproximaciones', figsize=(10,10))
+    figs.plot(xpts, xpts, 'k')
+    figs.plot(xpts, [func(x) for x in xpts], label='Función')
+    figs.plot(x0, func(x0), 'ro', label='Punto incial')
+    figs.plot(aprox, func(aprox), 'go', label='Punto final')
+    figs.title.set_text('Gráfica de la función')
+    figs.legend(loc="upper left")
+    
+def doublepoint_plot(func, dataframe, a, b, aprox):
+    '''
+    
+    '''
+    df = dataframe
+    df['F(xi)'] = df['Xi'].apply(func)
+    xpts = np.linspace(a, b, 500)
+    figs = dataframe.plot(kind='scatter', x='Xi', y='F(xi)', color='purple', label='Aproximaciones', s=20, figsize=(10,10))
+    figs.axhline(y=0, color='k')
+    figs.plot(xpts, [func(x) for x in xpts], label='Función')
+    figs.plot(aprox, func(aprox), 'go', markersize=12, label='Solución')
+    figs.title.set_text('Gráfica de la función')
+    figs.legend(loc="upper left")
