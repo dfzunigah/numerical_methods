@@ -5,34 +5,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.0.3] (2019/09/08)
 ### Added
-- A plotting function for Newton-Rapshon method.
-- Minor appearance stuff. 
+- **bg_functions:** A plotting function for Newton-Rapshon method.
+- **1 - Rootfinding_methods:** Minor appearance stuff. 
 
 ### Fixed
-- Plotting functions didn't worked well if the result was a negative number.
+- **bg_functions:** Plotting functions didn't worked well if the result was a negative number.
 
 ## [0.0.2] (2019/09/07)
 ### Added
-- Added Newton-Rapshon method and its theory.
-- Added secant method and its theory.
-- Added bisection method and its theory.
-- Added Regula Falsi method and its theory.
-- A tabulating function for double-point methods (bisection, secant, regula_falsi)
-- A plotting function for fixed point method.
-- A plotting function for root-finding methods (bisection, secant, regula_falsi), except Newton-Rapshon.
+- **1 - Rootfinding_methods:** Added Newton-Rapshon method and its theory.
+- **1 - Rootfinding_methods:** Added secant method and its theory.
+- **1 - Rootfinding_methods:** Added bisection method and its theory.
+- **1 - Rootfinding_methods:** Added Regula Falsi method and its theory.
+- **bg_functions:** A tabulating function for double-point methods (bisection, secant, regula_falsi)
+- **bg_functions:** A plotting function for fixed point method.
+- **bg_functions:** A plotting function for root-finding methods (bisection, secant, regula_falsi), except Newton-Rapshon.
 
 ### Fixed
-- Fixed a bug which was rendering the table for the Newton-Raphson method in the wrong order.
-- Examples of some background functions weren't right.
-- Regula Falsi method was yielding a wrong result.
+- **bg_functions:** Fixed a bug which was rendering the table for the Newton-Raphson method in the wrong order.
+- **1 - Rootfinding_methods:** Examples of some background functions weren't right.
+- **1 - Rootfinding_methods:** Regula Falsi method was yielding a wrong result.
 
 ### Removed
-- User friendly user input.
+- **1 - Rootfinding_methods:** User friendly user input. But now it's easier to modify entries.
 
 ## [0.0.1] (2019/09/06)
 ### Added
-- Theory of the fixed point iteration method.
-- Foolproof fixed point algorithm.
+- **1 - Rootfinding_methods:** Theory of the fixed point iteration method.
+- **1 - Rootfinding_methods:** Foolproof fixed point algorithm.
 
 ### Changed
 - Separated background functions in a different file.
