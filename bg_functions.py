@@ -170,7 +170,7 @@ def doublepoint_table(func, Xi, error):
     >>> solution, Xi, error = secant(func, 1, 2, 10)
     >>> tabs = doublepoint_table(func, Xi, error)
     >>> tabs
-    **Renders a 3-column table** 
+    **Renders a 3-column table**
     
     '''
     if len(Xi) == 0:
@@ -186,10 +186,63 @@ def doublepoint_table(func, Xi, error):
     
 def fixed_point_plot(func, dataframe, x0, aprox):
     '''
+    Plots the solution, aproximations, initial and final values of the f(x) = 0.
+
+    Parameters
+    ----------
+    func : function
+        Function to plot.
+    dataframe : pandas.DataFrame
+        From the 'singlepoint_table' method.
+    x0 : (float) number
+        Initial aproximation.
+    aprox : (float) number
+        Final aproximation.
     
+    Dependencies
+    ------------
+    - import numpy as np
+    - import pandas as pd
+    - import matplotlib.pyplot as plt
+    
+    Returns
+    -------
+    None : ----
+        When called, plots but doesn't return anything.
+    
+    Explanation
+    -----------
+    As a range is needed to plot, first it's evaluated where the solution is
+    (negative or positive x-axis). According to this, it'll then evaluate if the
+    aproximations span over one part of the x-axis of both negative and positive parts.
+    A linear space will be created according to this, so that all needed elements can be
+    plotted.
+    A scatter plot is created with each point being tuples [Xi, F(xi)] taken from their
+    respective columns in the provided dataframe. These represent the aproximations.
+    A straight diagonal line representing 'y=x' is plotted. Function 'func' is plotted.
+    Initial and final points are plotted. Title and legend location are set.
+    
+    Examples
+    --------
+    >>> func = lambda x: x**2 - x -1
+    >>> solution, Xi = fixed_point(func, 0.5, 50)
+    >>> tabs = singlepoint_table(func, Xi, 0.5, "fixed_point")
+    >>> fixed_point_plot(func, tabs, x0, solution)
+    **Plots the solution**
     '''
-    xmax = dataframe['Xi'].max()
-    xpts = np.linspace(0, xmax, 500)
+    x_min = dataframe['Xi'].min()
+    x_max = dataframe['Xi'].max()
+    if (aprox >= 0):
+        if(x_min < 0):
+            xpts = np.linspace(x_min, x_max, 500)
+        else:
+            xpts = np.linspace(0, x_max, 500)
+    else:
+        if(x_max > 0):
+            xpts = np.linspace(x_min, x_max, 500)
+        else:
+            xpts = np.linspace(x_min, 0, 500)
+        
     figs = dataframe.plot(kind='scatter', x='Xi', y='F(xi)', color='purple', label='Aproximaciones', figsize=(10,10))
     figs.plot(xpts, xpts, 'k')
     figs.plot(xpts, [func(x) for x in xpts], label='Función')
@@ -198,9 +251,114 @@ def fixed_point_plot(func, dataframe, x0, aprox):
     figs.title.set_text('Gráfica de la función')
     figs.legend(loc="upper left")
     
+def newton_raphson_plot(func, dataframe, x0, aprox):
+    '''
+    Plots the solution (root), aproximations, initial and final values of the f(x) = 0.
+
+    Parameters
+    ----------
+    func : function
+        Function to plot.
+    dataframe : pandas.DataFrame
+        From the 'doublepoint_table' method.
+    x0 : (float) number
+        Initial aproximation.
+    aprox : (float) number
+        Final aproximation.
+    
+    Dependencies
+    ------------
+    - import numpy as np
+    - import pandas as pd
+    - import matplotlib.pyplot as plt
+    
+    Returns
+    -------
+    None : ----
+        When called, plots but doesn't return anything.
+    
+    Explanation
+    -----------
+    As a range is needed to plot, first it's evaluated where the solution is
+    (negative or positive x-axis). According to this, it'll then evaluate if the
+    aproximations span over one part of the x-axis of both negative and positive parts.
+    A linear space will be created according to this, so that all needed elements can be
+    plotted.
+    In the 'df' dataframe (a copy of the provided dataframe) column 'F(xi)' contains now
+    the values of the function 'func' applied to the each value of column 'Xi'. A scatter
+    plot is created with tuples ['Xi', 'F(xi)']. These represent the aproximations.
+    x-axis is plotted. Function 'func' is plotted. Initial and final points are plotted.
+    Title and legend location are set.
+    
+    Examples
+    --------
+    >>> func = lambda x: x**2 - x -1
+    >>> derivative_func = lambda x: 2*x - 1
+    >>> solution, Xi = newton_rapshon(func, derivative_func, 0.5, 50)
+    >>> tabs = singlepoint_table(func, Xi, 0.5, "newton_rapshon")
+    >>> newton_rapshon_plot(func, tabs, x0, solution)
+    **Plots the solution**
+    '''
+    x_min = dataframe['Xi'].min()
+    x_max = dataframe['Xi'].max()
+    if (aprox >= 0):
+        if(x_min < 0):
+            xpts = np.linspace(x_min, x_max, 500)
+        else:
+            xpts = np.linspace(0, x_max, 500)
+    else:
+        if(x_max > 0):
+            xpts = np.linspace(x_min, x_max, 500)
+        else:
+            xpts = np.linspace(x_min, 0, 500)
+
+    df = dataframe
+    df['F(xi)'] = df['Xi'].apply(func)
+    figs = dataframe.plot(kind='scatter', x='Xi', y='F(xi)', color='purple', label='Aproximaciones', figsize=(10,10))
+    figs.axhline(y=0, color='k')
+    figs.plot(xpts, [func(x) for x in xpts], label='Función')
+    figs.plot(x0, func(x0), 'ro', label='Punto incial')
+    figs.plot(aprox, func(aprox), 'go', label='Punto final')
+    figs.title.set_text('Gráfica de la función')
+    figs.legend(loc="upper left")
+    
 def doublepoint_plot(func, dataframe, a, b, aprox):
     '''
+    Plots the solution, aproximations, initial and final values of the f(x) = 0.
+
+    Parameters
+    ----------
+    func : function
+        Function to plot.
+    dataframe : pandas.DataFrame
+        From the 'doublepoint_table' method.
+    a, b: (float) number
+        Lower (a) and upper (b) limits of the range.
+    aprox : (float) number
+        Final aproximation.
     
+    Dependencies
+    ------------
+    - import numpy as np
+    - import pandas as pd
+    - import matplotlib.pyplot as plt
+    
+    Returns
+    -------
+    None : ----
+        When called, plots but doesn't return anything.
+    
+    Explanation
+    -----------
+        
+    
+    Examples
+    --------
+    >>> func = lambda x: x**2 - x -1
+    >>> solution, Xi, error = secant(func, 0, 2, 50)
+    >>> tabs = doublepoint_table(func, Xi, error)
+    >>> doublepoint_plot(func, tabs, 0, 2, solution)
+    **Plots the solution**
     '''
     df = dataframe
     df['F(xi)'] = df['Xi'].apply(func)
